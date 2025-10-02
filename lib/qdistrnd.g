@@ -6,8 +6,6 @@
 # Valerii K. Kozin <kozin.valera@gmail.com>
 # Leonid P. Pryadko <leonid.pryadko@gmail.com>
 
-
-
 ############################
 #! @Chapter AllFunctions
 #! @Section HelperFunctions
@@ -812,7 +810,7 @@ BindGlobal("QDR_MakeH",
 #!    see Section <Ref Sect="Section_Empirical"/>.  Not set by default.
 #!  See Section <Ref Sect="Section_SimpleVersion"/> for the
 #!  description of the algorithm.  
-#! @Arguments HX, HZ, num, mindist[, debug] :field:=GF(2), maxav:=fail
+#! @Arguments HX, HZ, num, mindist[, debug] :field:=GF(2), maxav:=fail, CW=fail
 #! @Returns An upper bound on the CSS distance $d_Z$
 #DeclareGlobalFunction("DistRandCSS");
 BindGlobal("DistRandCSS",
@@ -821,7 +819,7 @@ BindGlobal("DistRandCSS",
                          local DistBound, i, j, dimsWZ, rowsWZ, colsWZ, F, debug, pos, CodeWords, mult,
                                VecCount,  maxav, WZ, WZ1, WZ2, WX,
                                TempVec, FirstVecFound, TempWeight, per,
-                               savecws,pos,res;
+                               savecws,posi,res, CW;
                          
                          if ValueOption("CW") <> fail then
                             if IsList(ValueOption("CW")) then
@@ -875,10 +873,10 @@ BindGlobal("DistRandCSS",
                                  ######
                                  if ValueOption("CW") <> fail then
                                     if TempWeight in CW and WeightVecFFE(WX*TempVec)>0 then
-                                        pos:=Position(CW,TempWeight);
-                                        Add(savecws[pos],TempVec)
+                                        posi:=Position(CW,TempWeight);
+                                        Add(savecws[posi],TempVec);
                                     fi;
-                                 fi
+                                 fi;
                                  ######
                                  if (TempWeight > 0) and (TempWeight <= DistBound) then
                                      if WeightVecFFE(WX*TempVec)>0 then # lin-indep from rows of GX
@@ -956,16 +954,17 @@ BindGlobal("DistRandCSS",
                          
                          if (debug[4] = 1) then
 #                             Display(CodeWords);                             
-                             QDR_DoProbOut(mult,colsWZ,i);
+                              QDR_DoProbOut(mult,colsWZ,i);
                          fi;
                          ######
+                         res:=[];
                          if ValueOption("CW") <> fail then
                             Add(res,DistBound);
-                            for i in savecws do
-                                Add(res,Set(savecws[i]);
+                            for i in [1..Length(savecws)] do
+                                Add(res,Set(savecws[i]));
                             od;
                          else
-                            res[DistBound];
+                            Add(res,DistBound);
                          fi;
                           
                          #return DistBound;
